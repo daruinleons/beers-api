@@ -13,20 +13,17 @@ type Config struct {
 }
 
 type DBConfig struct {
-	Username        string `yaml:"UserName"`
-	Password        string `yaml:"Password"`
-	Host            string `yaml:"Host"`
-	DriverName      string `yaml:"DriverName"`
-	DBName          string `yaml:"DBName"`
-	ConnMaxLifetime int64  `yaml:"ConnMaxLifetime"`
-	MaxIdleConns    int    `yaml:"MaxIdleConns"`
-	MaxOpenConns    int    `yaml:"MaxOpenConns"`
+	UserName   string `yaml:"UserName"`
+	Password   string `yaml:"Password"`
+	Host       string `yaml:"Host"`
+	DriverName string `yaml:"DriverName"`
+	DBName     string `yaml:"DBName"`
 }
 
 type CurrencyConverterRestClientConfig struct {
 	BaseURL                    string `yaml:"BaseURL"`
 	RequestTimeoutMilliseconds int    `yaml:"RequestTimeoutMilliseconds"`
-	XAPIKey                    string `yaml:"XAPIKey"`
+	XAPIKeyEnv                 string `yaml:"XAPIKeyEnv"`
 }
 
 func NewConfig() *Config {

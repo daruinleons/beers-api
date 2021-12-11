@@ -4,6 +4,9 @@ services:
     build: .
     image: app/beers-api
     container_name: beers-api
+    restart: on-failure:10
+    environment:
+      CURRENCY_CONVERTER_X_API_KEY: ${CURRENCY_CONVERTER_X_API_KEY}
     ports:
       - "8080:8080"
     depends_on:
@@ -13,7 +16,7 @@ services:
     container_name: mysql-db
     restart: unless-stopped
     environment:
-      MYSQL_DATABASE: "beers_db"
+      MYSQL_DATABASE: "BEERSDB"
       MYSQL_ROOT_PASSWORD: "123456"
     ports:
       - "3307:3306"

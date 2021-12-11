@@ -3,13 +3,14 @@ package repository_test
 import (
 	"database/sql"
 	genericerrors "errors"
+	"testing"
+
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/dleonsal/beers-api/src/core/domain/entities"
 	"github.com/dleonsal/beers-api/src/errors"
 	"github.com/dleonsal/beers-api/src/infrastructure/repository"
 	"github.com/go-sql-driver/mysql"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 const (
@@ -196,7 +197,6 @@ func Test_Save_WhenExecuteQueryFail_ThenReturnInternalServerError(t *testing.T) 
 
 	assert.Equal(t, expectedError, err)
 }
-
 
 func Test_Save_WhenQueryIsExecutedSuccessfully_ThenReturnNil(t *testing.T) {
 	beer := givenBeer()

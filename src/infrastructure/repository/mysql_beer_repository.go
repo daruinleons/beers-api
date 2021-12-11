@@ -7,6 +7,7 @@ import (
 
 	"github.com/dleonsal/beers-api/src/core/domain/entities"
 	"github.com/dleonsal/beers-api/src/errors"
+	"github.com/dleonsal/beers-api/src/infrastructure/logger"
 	"github.com/go-sql-driver/mysql"
 )
 
@@ -29,12 +30,14 @@ func NewMySqlBeerRepository(db *sql.DB) *mySqlBeerRepository {
 func (r *mySqlBeerRepository) List() ([]entities.Beer, *errors.RestError) {
 	stmt, err := r.db.Prepare(queryListBeers)
 	if err != nil {
+		logger.Log.Error(fmt.Sprintf("error trying to prepare statement: %s", err))
 		return nil, errors.NewInternalServerError("error trying to get beers from database")
 	}
 	defer stmt.Close()
 
 	rows, err := stmt.Query()
 	if err != nil {
+		logger.Log.Error(fmt.Sprintf("error trying to execute query: %s", err))
 		return nil, errors.NewInternalServerError("error trying to get beers from database")
 	}
 	defer rows.Close()
@@ -44,6 +47,7 @@ func (r *mySqlBeerRepository) List() ([]entities.Beer, *errors.RestError) {
 		var beer entities.Beer
 
 		if err := rows.Scan(&beer.Id, &beer.Name, &beer.Brewery, &beer.Country, &beer.Price, &beer.Currency); err != nil {
+			logger.Log.Error(fmt.Sprintf("error trying to scan rows: %s", err))
 			return nil, errors.NewInternalServerError("error trying to get beers from database")
 		}
 
@@ -56,6 +60,7 @@ func (r *mySqlBeerRepository) List() ([]entities.Beer, *errors.RestError) {
 func (r *mySqlBeerRepository) GetByID(beerID int64) (*entities.Beer, *errors.RestError) {
 	stmt, err := r.db.Prepare(queryGetBeer)
 	if err != nil {
+		logger.Log.Error(fmt.Sprintf("error trying to prepare statement: %s", err))
 		return nil, errors.NewInternalServerError("error trying to get beer from database")
 	}
 	defer stmt.Close()
@@ -67,6 +72,7 @@ func (r *mySqlBeerRepository) GetByID(beerID int64) (*entities.Beer, *errors.Res
 			return nil, errors.NewNotFoundError("beer not found")
 		}
 
+		logger.Log.Error(fmt.Sprintf("error trying to execute query: %s", getErr))
 		return nil, errors.NewInternalServerError("error trying to get beer from database")
 	}
 
@@ -76,12 +82,14 @@ func (r *mySqlBeerRepository) GetByID(beerID int64) (*entities.Beer, *errors.Res
 func (r *mySqlBeerRepository) Save(beer entities.Beer) *errors.RestError {
 	stmt, err := r.db.Prepare(queryInsertBeer)
 	if err != nil {
+		logger.Log.Error(fmt.Sprintf("error trying to prepare statement: %s", err))
 		return errors.NewInternalServerError("error trying to save beer in database")
 	}
-	//defer stmt.Close()
+	defer stmt.Close()
 
 	_, saveErr := stmt.Exec(beer.Id, beer.Name, beer.Brewery, beer.Country, beer.Price, beer.Currency)
 	if saveErr != nil {
+		logger.Log.Error(fmt.Sprintf("error trying to execute query: %s", saveErr))
 		driveErr, ok := saveErr.(*mysql.MySQLError)
 		if !ok {
 			return errors.NewInternalServerError("error trying to save beer in database")

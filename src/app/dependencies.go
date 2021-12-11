@@ -1,16 +1,16 @@
 package app
 
 import (
-	"github.com/dleonsal/beers-api/src/configs"
-	"github.com/dleonsal/beers-api/src/infrastructure/providers"
-	"github.com/dleonsal/beers-api/src/infrastructure/repository/db"
 	"net/http"
 	"os"
 	"time"
 
+	"github.com/dleonsal/beers-api/src/configs"
 	"github.com/dleonsal/beers-api/src/core/services"
 	"github.com/dleonsal/beers-api/src/infrastructure/handler"
+	"github.com/dleonsal/beers-api/src/infrastructure/providers"
 	"github.com/dleonsal/beers-api/src/infrastructure/repository"
+	"github.com/dleonsal/beers-api/src/infrastructure/repository/db"
 )
 
 const (
@@ -33,11 +33,12 @@ func wireDependencies(config *configs.Config) *handlerContainer {
 	httpClient := &http.Client{
 		Timeout: time.Duration(config.HTTPClientTimeoutMilliseconds) * time.Millisecond,
 	}
+
 	currencyConverterClient := providers.NewCurrencyConverterRestClient(
 		httpClient,
 		config.CurrencyConverterRestClientConfig.BaseURL,
 		time.Duration(config.CurrencyConverterRestClientConfig.RequestTimeoutMilliseconds)*time.Millisecond,
-		config.CurrencyConverterRestClientConfig.XAPIKey)
+		os.Getenv(config.CurrencyConverterRestClientConfig.XAPIKeyEnv))
 	beerService := services.NewBeerService(beerRepository, currencyConverterClient)
 	beerHandler := handler.NewBeerHandler(beerService)
 

@@ -2,8 +2,9 @@ package entities
 
 import (
 	"fmt"
-	"github.com/dleonsal/beers-api/src/errors"
 	"strings"
+
+	"github.com/dleonsal/beers-api/src/errors"
 )
 
 type Beer struct {

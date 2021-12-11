@@ -2,10 +2,11 @@ package entities_test
 
 import (
 	"fmt"
+	"testing"
+
 	"github.com/dleonsal/beers-api/src/core/domain/entities"
 	"github.com/dleonsal/beers-api/src/errors"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func Test_Validate_WhenIdIsInvalid_ThenReturnBadRequestError(t *testing.T) {
@@ -88,7 +89,6 @@ func Test_Validate_WhenCurrencyIsInvalid_ThenReturnBadRequestError(t *testing.T)
 
 	assert.Equal(t, expectedError, err)
 }
-
 
 func Test_Validate_WhenBeerIsValid_ThenReturnNil(t *testing.T) {
 	beer := entities.Beer{

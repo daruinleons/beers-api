@@ -1,13 +1,14 @@
 package providers
 
-import "C"
 import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/dleonsal/beers-api/src/errors"
 	"net/http"
 	"time"
+
+	"github.com/dleonsal/beers-api/src/errors"
+	"github.com/dleonsal/beers-api/src/infrastructure/logger"
 )
 
 type HTTPClient interface {
@@ -18,7 +19,7 @@ type CurrencyConverterRestClient struct {
 	httpClient     HTTPClient
 	baseURL        string
 	requestTimeout time.Duration
-	XAPIKey        string
+	xAPIKey        string
 }
 
 func NewCurrencyConverterRestClient(httpClient HTTPClient, baseURL string, requestTimeout time.Duration, xAPIkey string) *CurrencyConverterRestClient {
@@ -26,7 +27,7 @@ func NewCurrencyConverterRestClient(httpClient HTTPClient, baseURL string, reque
 		httpClient:     httpClient,
 		baseURL:        baseURL,
 		requestTimeout: requestTimeout,
-		XAPIKey:        xAPIkey,
+		xAPIKey:        xAPIkey,
 	}
 }
 
@@ -37,11 +38,12 @@ func (c *CurrencyConverterRestClient) ConvertValueToNewCurrency(oldCurrency, new
 
 	req, err := http.NewRequestWithContext(reqCtx, http.MethodGet, url, nil)
 	if err != nil {
+		logger.Log.Error(fmt.Sprintf("error trying to create request: %s", err))
 		return 0, errors.NewInternalServerError("error trying to convert from one currency to another")
 
 	}
 
-	req.Header.Add("x-rapidapi-key", c.XAPIKey)
+	req.Header.Add("x-rapidapi-key", c.xAPIKey)
 	q := req.URL.Query()
 	q.Add("from", oldCurrency)
 	q.Add("to", newCurrency)
@@ -49,19 +51,20 @@ func (c *CurrencyConverterRestClient) ConvertValueToNewCurrency(oldCurrency, new
 
 	response, err := c.httpClient.Do(req)
 	if err != nil {
-		fmt.Println(err)
+		logger.Log.Error(fmt.Sprintf("error trying to execute request: %s", err))
 		return 0, errors.NewInternalServerError("error trying to convert from one currency to another")
 	}
 	defer response.Body.Close()
 
 	if response.StatusCode != http.StatusOK {
+		logger.Log.Error(fmt.Sprintf("error trying to convert from one currency to another, response code %d", response.StatusCode))
 		return 0, errors.NewInternalServerError("error trying to convert from one currency to another")
 	}
 
 	var result float64
 	err = json.NewDecoder(response.Body).Decode(&result)
-	if response.StatusCode != http.StatusOK {
-		fmt.Println(err)
+	if err != nil {
+		logger.Log.Error(fmt.Sprintf("error trying to decode response body: %s", err))
 		return 0, errors.NewInternalServerError("error trying to convert from one currency to another")
 	}
 

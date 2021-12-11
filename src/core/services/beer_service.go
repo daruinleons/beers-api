@@ -1,9 +1,10 @@
 package services
 
 import (
+	"strings"
+
 	"github.com/dleonsal/beers-api/src/core/domain/entities"
 	"github.com/dleonsal/beers-api/src/errors"
-	"strings"
 )
 
 type BeerRepository interface {

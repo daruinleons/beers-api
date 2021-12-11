@@ -3,6 +3,7 @@ package db
 import (
 	"database/sql"
 	"fmt"
+
 	"github.com/dleonsal/beers-api/src/configs"
 )
 
@@ -20,7 +21,7 @@ const (
 
 func NewMySqlDB(config *configs.DBConfig) *sql.DB {
 	dataSourceName := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8",
-		config.Username,
+		config.UserName,
 		config.Password,
 		config.Host,
 		config.DBName,

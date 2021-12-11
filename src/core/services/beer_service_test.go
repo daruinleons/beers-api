@@ -2,11 +2,12 @@ package services_test
 
 import (
 	"fmt"
+	"testing"
+
 	"github.com/dleonsal/beers-api/src/core/domain/entities"
 	"github.com/dleonsal/beers-api/src/core/services"
 	"github.com/dleonsal/beers-api/src/errors"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func Test_ListBeers_WhenRepositoryFail_ThenReturnError(t *testing.T) {
@@ -24,8 +25,8 @@ func Test_ListBeers_WhenRepositoryFail_ThenReturnError(t *testing.T) {
 }
 
 func Test_ListBeers_WhenProcessIsExecutedSuccessfully_ThenReturnBeersList(t *testing.T) {
-	expectBeer := givenBeer()
-	expectedBeers := []entities.Beer{*expectBeer}
+	expectedBeer := givenBeer()
+	expectedBeers := []entities.Beer{*expectedBeer}
 	mockBeerRepository := new(services.MockBeerRepository)
 	mockBeerRepository.On("List").Return(expectedBeers, nil)
 	beerService := services.NewBeerService(mockBeerRepository, nil)
@@ -55,14 +56,14 @@ func Test_GetBeerByID_WhenRepositoryFail_ThenReturnError(t *testing.T) {
 
 func Test_GetBeerByID_WhenProcessIsExecutedSuccessfully_ThenReturnBeer(t *testing.T) {
 	id := int64(1)
-	expectBeer := givenBeer()
+	expectedBeer := givenBeer()
 	mockBeerRepository := new(services.MockBeerRepository)
-	mockBeerRepository.On("GetByID", id).Return(expectBeer, nil)
+	mockBeerRepository.On("GetByID", id).Return(expectedBeer, nil)
 	beerService := services.NewBeerService(mockBeerRepository, nil)
 
 	beer, err := beerService.GetBeerByID(id)
 
-	assert.Equal(t, expectBeer, beer)
+	assert.Equal(t, expectedBeer, beer)
 	assert.Nil(t, err)
 	mockBeerRepository.AssertExpectations(t)
 
@@ -103,10 +104,10 @@ func Test_GetBoxPrice_WhenNewCurrencyIsEqualToCurrentCurrency_ThenReturnTotalPri
 	id := int64(1)
 	newCurrency := "COP"
 	quantity := uint64(10)
-	expectBeer := givenBeer()
+	expectedBeer := givenBeer()
 	expectedTotalPrice := 25000.0
 	mockBeerRepository := new(services.MockBeerRepository)
-	mockBeerRepository.On("GetByID", id).Return(expectBeer, nil)
+	mockBeerRepository.On("GetByID", id).Return(expectedBeer, nil)
 	beerService := services.NewBeerService(mockBeerRepository, nil)
 
 	totalPrice, err := beerService.GetBoxPrice(id, newCurrency, quantity)
@@ -120,13 +121,13 @@ func Test_GetBoxPrice_WhenCurrencyConverterClientFail_ThenReturnError(t *testing
 	id := int64(1)
 	newCurrency := "USD"
 	quantity := uint64(10)
-	expectBeer := givenBeer()
+	expectedBeer := givenBeer()
 	expectedTotalPrice := 0.0
 	expectedError := errors.NewInternalServerError("some error")
 	mockBeerRepository := new(services.MockBeerRepository)
-	mockBeerRepository.On("GetByID", id).Return(expectBeer, nil)
+	mockBeerRepository.On("GetByID", id).Return(expectedBeer, nil)
 	mockCurrencyConverterClient := new(services.MockCurrencyConverterClient)
-	mockCurrencyConverterClient.On("ConvertValueToNewCurrency", expectBeer.Currency, newCurrency, expectBeer.Price).
+	mockCurrencyConverterClient.On("ConvertValueToNewCurrency", expectedBeer.Currency, newCurrency, expectedBeer.Price).
 		Return(expectedTotalPrice, expectedError)
 	beerService := services.NewBeerService(mockBeerRepository, mockCurrencyConverterClient)
 
@@ -142,12 +143,12 @@ func Test_GetBoxPrice_WhenProcessIsExecutedSuccessfully_ThenReturnTotalPrice(t *
 	id := int64(1)
 	newCurrency := "USD"
 	quantity := uint64(10)
-	expectBeer := givenBeer()
+	expectedBeer := givenBeer()
 	expectedTotalPrice := 6.0
 	mockBeerRepository := new(services.MockBeerRepository)
-	mockBeerRepository.On("GetByID", id).Return(expectBeer, nil)
+	mockBeerRepository.On("GetByID", id).Return(expectedBeer, nil)
 	mockCurrencyConverterClient := new(services.MockCurrencyConverterClient)
-	mockCurrencyConverterClient.On("ConvertValueToNewCurrency", expectBeer.Currency, newCurrency, expectBeer.Price).
+	mockCurrencyConverterClient.On("ConvertValueToNewCurrency", expectedBeer.Currency, newCurrency, expectedBeer.Price).
 		Return(0.6, nil)
 	beerService := services.NewBeerService(mockBeerRepository, mockCurrencyConverterClient)
 
@@ -163,12 +164,12 @@ func Test_GetBoxPrice_WhenProcessIsExecutedSuccessfullyWithQuantityZero_ThenRetu
 	id := int64(1)
 	newCurrency := "USD"
 	quantity := uint64(0)
-	expectBeer := givenBeer()
+	expectedBeer := givenBeer()
 	expectedTotalPrice := 3.5999999999999996
 	mockBeerRepository := new(services.MockBeerRepository)
-	mockBeerRepository.On("GetByID", id).Return(expectBeer, nil)
+	mockBeerRepository.On("GetByID", id).Return(expectedBeer, nil)
 	mockCurrencyConverterClient := new(services.MockCurrencyConverterClient)
-	mockCurrencyConverterClient.On("ConvertValueToNewCurrency", expectBeer.Currency, newCurrency, expectBeer.Price).
+	mockCurrencyConverterClient.On("ConvertValueToNewCurrency", expectedBeer.Currency, newCurrency, expectedBeer.Price).
 		Return(0.6, nil)
 	beerService := services.NewBeerService(mockBeerRepository, mockCurrencyConverterClient)
 
